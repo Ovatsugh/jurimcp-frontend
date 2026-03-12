@@ -1,0 +1,286 @@
+<div class="min-h-screen bg-void flex flex-col">
+
+  <!-- Top navigation -->
+  <header class="sticky top-0 z-50 bg-base/70 backdrop-blur-md border-b border-stroke/50">
+    <div class="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-4 h-4 border border-gold/65 rotate-45 flex-shrink-0"></div>
+        <span class="font-display text-xl text-text tracking-[0.18em] uppercase">JuriMCP</span>
+        <span class="text-dim text-xs mx-1">/</span>
+        <span class="text-muted text-sm">Developer</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="text-muted text-sm hidden sm:block">{{ currentUser()?.name }}</span>
+        <button (click)="logout()" class="btn-danger-sm">Sair</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main class="flex-1 max-w-5xl mx-auto w-full px-6 py-10 space-y-10">
+
+    <!-- Account section -->
+    <section class="anim-fade-up">
+      <div class="flex items-center gap-4 mb-5">
+        <div class="gold-line"></div>
+        <h2 class="font-display text-2xl text-text">Minha Conta</h2>
+      </div>
+
+      <!-- Loading user skeleton -->
+      <div *ngIf="loadingUser()" class="border border-stroke/50 rounded-lg bg-surface p-6 flex items-center gap-4">
+        <div class="spinner"></div>
+        <span class="text-muted text-sm">Carregando dados da conta...</span>
+      </div>
+
+      <div *ngIf="!loadingUser()" class="border border-stroke/50 rounded-lg bg-surface p-6 grid grid-cols-2 md:grid-cols-4 gap-y-6 gap-x-8">
+        <div>
+          <p class="text-[10px] text-muted uppercase tracking-[0.12em] mb-1.5">Nome</p>
+          <p class="text-text text-sm">{{ currentUser()?.name }}</p>
+        </div>
+        <div>
+          <p class="text-[10px] text-muted uppercase tracking-[0.12em] mb-1.5">Email</p>
+          <p class="text-text text-sm truncate">{{ currentUser()?.email }}</p>
+        </div>
+        <div>
+          <p class="text-[10px] text-muted uppercase tracking-[0.12em] mb-1.5">Função</p>
+          <span class="badge-plan">{{ currentUser()?.role }}</span>
+        </div>
+        <div>
+          <p class="text-[10px] text-muted uppercase tracking-[0.12em] mb-1.5">Tenant ID</p>
+          <p class="font-mono text-teal text-[11px] break-all leading-relaxed">{{ currentUser()?.tenant_id }}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- API Keys section -->
+    <section class="anim-fade-up delay-100">
+      <div class="flex items-center justify-between mb-5">
+        <div class="flex items-center gap-4">
+          <div class="gold-line"></div>
+          <h2 class="font-display text-2xl text-text">API Keys</h2>
+        </div>
+        <button (click)="showCreateModal.set(true)" class="btn-primary-sm">
+          + Nova Key
+        </button>
+      </div>
+
+      <!-- Loading -->
+      <div *ngIf="loading()" class="flex justify-center py-14">
+        <div class="spinner"></div>
+      </div>
+
+      <!-- Error state -->
+      <div *ngIf="!loading() && loadError()"
+           class="border border-fail/25 bg-fail/5 rounded-lg py-10 text-center">
+        <p class="text-fail text-sm mb-3">Não foi possível carregar as API Keys.</p>
+        <button (click)="loadApiKeys()" class="btn-primary-sm">Tentar novamente</button>
+      </div>
+
+      <!-- Empty state -->
+      <div *ngIf="!loading() && !loadError() && apiKeys().length === 0"
+           class="border border-stroke/40 rounded-lg py-14 text-center">
+        <p class="text-muted text-sm">Nenhuma API Key encontrada.</p>
+        <p class="text-dim text-xs mt-1">Clique em "+ Nova Key" para criar uma.</p>
+      </div>
+
+      <!-- Keys list -->
+      <div *ngIf="!loading() && !loadError() && apiKeys().length > 0" class="space-y-3">
+        <div *ngFor="let key of apiKeys()"
+             class="border border-stroke/50 rounded-lg bg-surface hover:border-stroke transition-colors duration-150 p-5">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-3 mb-3 flex-wrap">
+                <h3 class="text-text text-sm font-medium">{{ key.name }}</h3>
+                <span [class]="!key.revoked_at ? 'badge-active' : 'badge-inactive'">{{ !key.revoked_at ? 'ativa' : 'revogada' }}</span>
+              </div>
+              <div class="key-token mb-3">{{ key.key_hash }}</div>
+              <div class="flex items-center gap-5 flex-wrap">
+                <span class="text-[11px] text-dim">Criada {{ key.created_at | date:'dd/MM/yyyy' }}</span>
+                <span *ngIf="key.last_used_at" class="text-[11px] text-dim">
+                  Último uso {{ key.last_used_at | date:'dd/MM/yyyy HH:mm' }}
+                </span>
+                <span *ngIf="!key.last_used_at" class="text-[11px] text-dim">Nunca utilizada</span>
+              </div>
+            </div>
+            <button (click)="openRevokeModal(key)" class="btn-danger-sm flex-shrink-0">
+              Revogar
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Usage instructions -->
+    <section class="anim-fade-up delay-200">
+      <div class="flex items-center gap-4 mb-5">
+        <div class="gold-line"></div>
+        <h2 class="font-display text-2xl text-text">Como Usar</h2>
+      </div>
+
+      <div class="border border-stroke/50 rounded-lg bg-surface divide-y divide-stroke/40">
+        <div class="flex gap-5 p-6">
+          <span class="font-mono text-gold text-sm flex-shrink-0 mt-0.5">01</span>
+          <div class="flex-1 min-w-0">
+            <p class="text-text text-sm font-medium mb-1.5">Autentique com a API Key</p>
+            <p class="text-muted text-[13px] leading-relaxed mb-3">
+              Envie sua API Key no header <span class="key-token inline-block !py-0.5 !px-2 !text-[11px]">X-Api-Key</span> em todas as requisições ao MCP Server. Não é necessária troca de token.
+            </p>
+            <pre class="font-mono text-[11px] bg-base border border-stroke/60 rounded p-4 overflow-x-auto leading-relaxed text-teal whitespace-pre">X-Api-Key: sk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</pre>
+          </div>
+        </div>
+        <div class="flex gap-5 p-6">
+          <span class="font-mono text-gold text-sm flex-shrink-0 mt-0.5">02</span>
+          <div class="flex-1 min-w-0">
+            <p class="text-text text-sm font-medium mb-1.5">Chame as tools via HTTP POST</p>
+            <p class="text-muted text-[13px] leading-relaxed mb-3">
+              Envie requisições JSON-RPC 2.0 para <span class="key-token inline-block !py-0.5 !px-2 !text-[11px]">POST /mcp/jurimcp</span>. Sem sessão, sem SSE — uma chamada HTTP por tool.
+            </p>
+            <pre class="font-mono text-[11px] bg-base border border-stroke/60 rounded p-4 overflow-x-auto leading-relaxed text-text/80 whitespace-pre"># Python (pip install langchain-mcp-adapters)
+from langchain_mcp_adapters.client import MultiServerMCPClient
+
+client = MultiServerMCPClient(&#123;
+    "jurimcp": &#123;
+        "url": "http://localhost:8000/mcp/jurimcp",
+        "transport": "streamable_http",
+        "headers": &#123; "X-Api-Key": "sk_SUA_CHAVE_AQUI" &#125;,
+    &#125;
+&#125;)
+tools = await client.get_tools()</pre>
+          </div>
+        </div>
+        <div class="flex gap-5 p-6">
+          <span class="font-mono text-gold text-sm flex-shrink-0 mt-0.5">03</span>
+          <div>
+            <p class="text-text text-sm font-medium mb-1.5">Segurança</p>
+            <p class="text-muted text-[13px] leading-relaxed">
+              Mantenha suas API Keys seguras e revogue-as imediatamente se suspeitar de comprometimento. Crie uma nova key para substituir.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+</div>
+
+<!-- ─── Modal: Chave Criada (copiar uma vez) ──────────────── -->
+<div *ngIf="createdKey()" class="fixed inset-0 z-50 flex items-center justify-center px-4">
+  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+  <div class="relative bg-surface border border-gold/25 rounded-lg w-full max-w-md shadow-2xl">
+
+    <!-- Header -->
+    <div class="flex items-center gap-3 px-6 pt-6 pb-4 border-b border-stroke/40">
+      <div class="gold-line"></div>
+      <h3 class="font-display text-xl text-text">Key criada com sucesso</h3>
+    </div>
+
+    <!-- Body -->
+    <div class="px-6 py-5">
+      <div class="flex items-center gap-2 bg-fail/8 border border-fail/25 rounded px-3 py-2 mb-5">
+        <svg class="flex-shrink-0 text-fail" width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+        </svg>
+        <p class="text-fail text-xs">Copie agora. A API Key não será exibida novamente.</p>
+      </div>
+
+      <!-- API Key -->
+      <label class="text-[10px] text-muted uppercase tracking-[0.12em] mb-2 block">API Key</label>
+      <div class="flex gap-2 mb-5">
+        <div class="key-token flex-1 select-all truncate">{{ createdKey() }}</div>
+        <button
+          (click)="copyCreatedKey()"
+          [class]="copiedKey() ? 'btn-primary-sm !bg-teal/20 !text-teal border border-teal/30' : 'btn-primary-sm'"
+          style="flex-shrink:0">
+          {{ copiedKey() ? '✓' : 'Copiar' }}
+        </button>
+      </div>
+
+      <button (click)="closeCreatedKeyModal()" class="btn-ghost w-full">
+        Fechar
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ─── Modal: Criar API Key ─────────────────────────────── -->
+<div *ngIf="showCreateModal()" class="fixed inset-0 z-50 flex items-center justify-center px-4">
+  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" (click)="showCreateModal.set(false)"></div>
+  <div class="relative bg-surface border border-stroke/50 rounded-lg w-full max-w-md shadow-2xl">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-stroke/40">
+      <div class="flex items-center gap-3">
+        <div class="gold-line"></div>
+        <h3 class="font-display text-xl text-text">Nova API Key</h3>
+      </div>
+      <button (click)="showCreateModal.set(false)" class="text-muted hover:text-text transition-colors text-xl leading-none">&times;</button>
+    </div>
+
+    <!-- Body -->
+    <form [formGroup]="createKeyForm" (ngSubmit)="createApiKey()" class="px-6 py-5">
+      <label class="text-[10px] text-muted uppercase tracking-[0.12em] mb-2 block">Nome da Key</label>
+      <input
+        type="text"
+        formControlName="name"
+        placeholder="Ex: Meu App Mobile"
+        class="field mb-5"
+        [attr.autofocus]="true">
+
+      <div class="flex gap-3">
+        <button
+          type="button"
+          (click)="showCreateModal.set(false)"
+          class="btn-ghost flex-1">
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          [disabled]="createKeyForm.invalid || creatingKey()"
+          class="btn-primary flex-1">
+          {{ creatingKey() ? '...' : 'Criar Key' }}
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<!-- ─── Modal: Confirmar Revogação ───────────────────────── -->
+<div *ngIf="keyToRevoke()" class="fixed inset-0 z-50 flex items-center justify-center px-4">
+  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" (click)="closeRevokeModal()"></div>
+  <div class="relative bg-surface border border-fail/20 rounded-lg w-full max-w-sm shadow-2xl">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-stroke/40">
+      <h3 class="font-display text-xl text-text">Revogar Key</h3>
+      <button (click)="closeRevokeModal()" class="text-muted hover:text-text transition-colors text-xl leading-none">&times;</button>
+    </div>
+
+    <!-- Body -->
+    <div class="px-6 py-5">
+      <p class="text-muted text-sm mb-2">Tem certeza que deseja revogar a key:</p>
+      <div class="key-token mb-4">{{ keyToRevoke()?.name }}</div>
+      <p class="text-dim text-xs mb-5">Esta ação não pode ser desfeita. A key será invalidada imediatamente.</p>
+
+      <div class="flex gap-3">
+        <button
+          type="button"
+          (click)="closeRevokeModal()"
+          [disabled]="revokingKey()"
+          class="btn-ghost flex-1">
+          Cancelar
+        </button>
+        <button
+          type="button"
+          (click)="confirmRevoke()"
+          [disabled]="revokingKey()"
+          class="btn-primary flex-1 !bg-fail hover:!bg-fail/80">
+          {{ revokingKey() ? '...' : 'Revogar' }}
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

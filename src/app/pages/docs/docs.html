@@ -1,0 +1,397 @@
+<div class="min-h-screen bg-void flex flex-col">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 bg-base/70 backdrop-blur-md border-b border-stroke/50">
+    <div class="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-4 h-4 border border-gold/65 rotate-45 flex-shrink-0"></div>
+        <span class="font-display text-xl text-text tracking-[0.18em] uppercase">JuriMCP</span>
+        <span class="text-dim text-xs mx-1">/</span>
+        <span class="text-muted text-sm">Documentação</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <ng-container *ngIf="isLoggedIn; else guestNav">
+          <a routerLink="/dashboard" class="text-muted hover:text-text text-sm transition-colors duration-200">Dashboard</a>
+          <button (click)="logout()" class="btn-danger-sm">Sair</button>
+        </ng-container>
+        <ng-template #guestNav>
+          <a routerLink="/login" class="text-muted hover:text-text text-sm transition-colors duration-200">Entrar</a>
+          <a routerLink="/register" class="btn-primary-sm">Criar conta</a>
+        </ng-template>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex-1 max-w-6xl mx-auto w-full px-6 py-10 flex gap-10">
+
+    <!-- Sidebar -->
+    <aside class="hidden lg:block w-48 flex-shrink-0">
+      <nav class="sticky top-24 space-y-0.5">
+        <p class="text-[10px] text-muted uppercase tracking-[0.15em] mb-3 px-2">Navegação</p>
+        <a [routerLink]="[]" fragment="visao-geral" class="doc-nav-link">Visão Geral</a>
+        <a [routerLink]="[]" fragment="autenticacao" class="doc-nav-link">Autenticação</a>
+        <a [routerLink]="[]" fragment="exemplos" class="doc-nav-link">Exemplos</a>
+        <a [routerLink]="[]" fragment="tools" class="doc-nav-link">Tools</a>
+        <a [routerLink]="[]" fragment="status" class="doc-nav-link">Status</a>
+      </nav>
+    </aside>
+
+    <!-- Main content -->
+    <main class="flex-1 min-w-0 space-y-14 pb-24">
+
+      <!-- Title -->
+      <div class="anim-fade-up">
+        <p class="text-gold tracking-[0.3em] text-[11px] uppercase mb-4">MCP Server</p>
+        <h1 class="font-display text-[clamp(2.2rem,5vw,3.2rem)] text-text leading-tight mb-4">Guia de Uso</h1>
+        <p class="text-muted text-[14px] leading-relaxed max-w-2xl">
+          Ferramentas de cálculo jurídico expostas via JSON-RPC 2.0 sobre Streamable HTTP.
+          Autentique com sua API Key e conecte qualquer cliente MCP compatível.
+        </p>
+      </div>
+
+      <!-- ─── Visão Geral ─────────────────────────────── -->
+      <section id="visao-geral" class="scroll-mt-20 anim-fade-up delay-100">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="gold-line"></div>
+          <h2 class="font-display text-2xl text-text">Visão Geral</h2>
+        </div>
+        <div class="border border-stroke/50 rounded-lg overflow-hidden">
+          <table class="doc-table">
+            <tbody>
+              <tr>
+                <td class="text-muted text-[12px] w-36">Base URL</td>
+                <td><code class="code-inline">http://localhost:8000</code></td>
+              </tr>
+              <tr>
+                <td class="text-muted text-[12px]">Transport</td>
+                <td><code class="code-inline">Streamable HTTP</code></td>
+              </tr>
+              <tr>
+                <td class="text-muted text-[12px]">MCP Endpoint</td>
+                <td><code class="code-inline">POST /mcp/jurimcp</code></td>
+              </tr>
+              <tr>
+                <td class="text-muted text-[12px]">Autenticação</td>
+                <td><code class="code-inline">X-Api-Key: sk_xxxx</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ─── Autenticação ───────────────────────────── -->
+      <section id="autenticacao" class="scroll-mt-20">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="gold-line"></div>
+          <h2 class="font-display text-2xl text-text">Autenticação</h2>
+        </div>
+
+        <p class="text-muted text-[13px] leading-relaxed mb-6">
+          Para acessar o MCP Server, use sua API Key diretamente no header <code class="code-inline">X-Api-Key</code>.
+          Não é necessária nenhuma troca de token — a chave é usada diretamente em todas as requisições.
+          Crie sua API Key no <a routerLink="/dashboard" class="text-teal hover:underline">Dashboard</a>.
+        </p>
+
+        <!-- Header format -->
+        <div class="border border-stroke/50 rounded-lg overflow-hidden mb-6">
+          <table class="doc-table">
+            <tbody>
+              <tr>
+                <td class="text-muted text-[12px] w-28">Endpoint</td>
+                <td><code class="code-inline">POST /mcp/jurimcp</code></td>
+              </tr>
+              <tr>
+                <td class="text-muted text-[12px]">Header</td>
+                <td><code class="code-inline">X-Api-Key: sk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Exemplo cURL -->
+        <p class="text-muted text-[12px] uppercase tracking-[0.1em] mb-2">Exemplo</p>
+        <pre class="code-block code-block--standalone"><code [highlight]="authUsageCurl" language="bash"></code></pre>
+
+        <!-- Notas -->
+        <div class="grid gap-3 mt-6 sm:grid-cols-2">
+          <div class="border border-stroke/40 rounded-lg p-4">
+            <p class="text-text text-[13px] font-medium mb-1">API Key</p>
+            <p class="text-muted text-[12px] leading-relaxed">Suas chaves começam com <code class="code-inline-dim">sk_</code>. Cada chave dá acesso a todas as tools disponíveis no servidor.</p>
+          </div>
+          <div class="border border-stroke/40 rounded-lg p-4">
+            <p class="text-text text-[13px] font-medium mb-1">Revogação</p>
+            <p class="text-muted text-[12px] leading-relaxed">Se sua API Key for comprometida, revogue-a imediatamente no Dashboard e crie uma nova.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── Exemplos ───────────────────────────────── -->
+      <section id="exemplos" class="scroll-mt-20">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="gold-line"></div>
+          <h2 class="font-display text-2xl text-text">Exemplos</h2>
+        </div>
+
+        <div class="flex flex-wrap gap-1 border-b border-stroke/40">
+          <button (click)="activeExampleTab.set('python')"
+            [class]="activeExampleTab() === 'python' ? 'code-tab code-tab--active' : 'code-tab'">Python</button>
+          <button (click)="activeExampleTab.set('curl')"
+            [class]="activeExampleTab() === 'curl' ? 'code-tab code-tab--active' : 'code-tab'">cURL</button>
+          <button (click)="activeExampleTab.set('nodejs')"
+            [class]="activeExampleTab() === 'nodejs' ? 'code-tab code-tab--active' : 'code-tab'">Node.js</button>
+          <button (click)="activeExampleTab.set('go')"
+            [class]="activeExampleTab() === 'go' ? 'code-tab code-tab--active' : 'code-tab'">Go</button>
+          <button (click)="activeExampleTab.set('php')"
+            [class]="activeExampleTab() === 'php' ? 'code-tab code-tab--active' : 'code-tab'">PHP</button>
+        </div>
+
+        <!-- cURL -->
+        <pre *ngIf="activeExampleTab() === 'curl'" class="code-block"><code [highlight]="exampleCurl" language="bash"></code></pre>
+
+        <!-- Node.js -->
+        <pre *ngIf="activeExampleTab() === 'nodejs'" class="code-block"><code [highlight]="exampleNodejs" language="javascript"></code></pre>
+
+        <!-- Go -->
+        <pre *ngIf="activeExampleTab() === 'go'" class="code-block"><code [highlight]="exampleGo" language="go"></code></pre>
+
+        <!-- PHP -->
+        <pre *ngIf="activeExampleTab() === 'php'" class="code-block"><code [highlight]="examplePhp" language="php"></code></pre>
+
+        <!-- Python -->
+        <pre *ngIf="activeExampleTab() === 'python'" class="code-block"><code [highlight]="examplePython" language="python"></code></pre>
+
+      </section>
+
+      <!-- ─── Tools ────────────────────────────────────── -->
+      <section id="tools" class="scroll-mt-20">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="gold-line"></div>
+          <h2 class="font-display text-2xl text-text">Tools</h2>
+        </div>
+        <p class="text-muted text-[13px] leading-relaxed mb-6">
+          Todas as tools são invocadas via <code class="code-inline">tools/call</code>. Parâmetros com valor padrão são opcionais.
+        </p>
+
+        <div class="space-y-3">
+
+          <!-- calcular_juros_mora -->
+          <div class="border border-stroke/50 rounded-lg overflow-hidden">
+            <div class="flex flex-wrap items-center gap-3 bg-surface px-5 py-4">
+              <code class="code-inline !text-gold">calcular_juros_mora</code>
+              <span class="text-muted text-[12px]">Juros de mora e multa por inadimplência</span>
+            </div>
+            <table class="doc-table border-t border-stroke/30">
+              <thead><tr><th class="text-[10px] text-dim font-normal uppercase tracking-[0.1em]">Parâmetro</th><th class="text-[10px] text-dim font-normal uppercase tracking-[0.1em]">Tipo</th><th class="text-[10px] text-dim font-normal uppercase tracking-[0.1em]">Padrão</th></tr></thead>
+              <tbody>
+                <tr><td><code class="code-inline-dim">valor_principal</code></td><td class="text-muted text-[12px]">float</td><td class="text-dim text-[12px]">—</td></tr>
+                <tr><td><code class="code-inline-dim">data_vencimento</code></td><td class="text-muted text-[12px]">string (YYYY-MM-DD)</td><td class="text-dim text-[12px]">—</td></tr>
+                <tr><td><code class="code-inline-dim">data_calculo</code></td><td class="text-muted text-[12px]">string (YYYY-MM-DD)</td><td class="text-dim text-[12px]">—</td></tr>
+                <tr><td><code class="code-inline-dim">taxa_juros_mensal</code></td><td class="text-muted text-[12px]">float</td><td class="text-dim text-[12px]">1.0</td></tr>
+                <tr><td><code class="code-inline-dim">multa_percentual</code></td><td class="text-muted text-[12px]">float</td><td class="text-dim text-[12px]">2.0</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- calcular_correcao_monetaria -->
+          <div class="border border-stroke/50 rounded-lg overflow-hidden">
+            <div class="flex flex-wrap items-center gap-3 bg-surface px-5 py-4">
+              <code class="code-inline !text-gold">calcular_correcao_monetaria</code>
+              <span class="text-muted text-[12px]">Correção monetária por taxa anual</span>
+            </div>
+            <table class="doc-table border-t border-stroke/30">
+              <thead><tr><th class="text-[10px] text-dim font-normal uppercase tracking-[0.1em]">Parâmetro</th><th class="text-[10px] text-dim font-normal uppercase tracking-[0.1em]">Tipo</th><th class="text-[10px] text-dim font-normal uppercase tracking-[0.1em]">Padrão</th></tr></thead>
+              <tbody>
+                <tr><td><code class="code-inline-dim">valor_original</code></td><td class="text-muted text-[12px]">float</td><td class="text-dim text-[12px]">—</td></tr>
+                <tr><td><code class="code-inline-dim">taxa_anual_percentual</code></td><td class="text-muted text-[12px]">float</td><td class="text-dim text-[12px]">—</td></tr>
+                <tr><td><code class="code-inline-dim">data_inicial</code></td><td class="text-muted text-[12px]">string (YYYY-MM-DD)</td><td class="text-dim text-[12px]">—</td></tr>
+                <tr><td><code class="code-inline-dim">data_final</code></td><td class="text-muted text-[12px]">string (YYYY-MM-DD)</td><td class="text-dim text-[12px]">—</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- calcular_honorarios_advocaticios -->
+          <div class="border border-stroke/50 rounded-lg overflow-hidden">
+            <div class="flex flex-wrap items-center gap-3 bg-surface px-5 py-4">
+              <code class="code-inline !text-gold">calcular_honorarios_advocaticios</code>
+              <span class="text-muted text-[12px]">Honorários advocatícios conforme CPC</span>
+            </div>
+            <table class="doc-table border-t border-stroke/30">
+              <thead><tr><th class="text-[10px] text-dim font-normal uppercase tracking-[0.1em]">Parâmetro</th><th class="text-[10px] text-dim font-normal uppercase tracking-[0.1em]">Tipo</th><th class="text-[10px] text-dim font-normal uppercase tracking-[0.1em]">Padrão</th></tr></thead>
+              <tbody>
+                <tr><td><code class="code-inline-dim">valor_causa</code></td><td class="text-muted text-[12px]">float</td><td class="text-dim text-[12px]">—</td></tr>
+                <tr><td><code class="code-inline-dim">percentual</code></td><td class="text-muted text-[12px]">float</td><td class="text-dim text-[12px]">15.0</td></tr>
+                <tr><td><code class="code-inline-dim">fase</code></td><td class="text-muted text-[12px]">string</td><td class="text-dim text-[12px]">"conhecimento"</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- calcular_rescisao_trabalhista -->
+          <div class="border border-stroke/50 rounded-lg overflow-hidden">
+            <div class="flex flex-wrap items-center gap-3 bg-surface px-5 py-4">
+              <code class="code-inline !text-gold">calcular_rescisao_trabalhista</code>
+              <span class="text-muted text-[12px]">Verbas rescisórias estimadas (CLT)</span>
+            </div>
+            <table class="doc-table border-t border-stroke/30">
+              <thead><tr><th class="text-[10px] text-dim font-normal uppercase tracking-[0.1em]">Parâmetro</th><th class="text-[10px] text-dim font-normal uppercase tracking-[0.1em]">Tipo</th><th class="text-[10px] text-dim font-normal uppercase tracking-[0.1em]">Padrão</th></tr></thead>
+              <tbody>
+                <tr><td><code class="code-inline-dim">salario_bruto</code></td><td class="text-muted text-[12px]">float</td><td class="text-dim text-[12px]">—</td></tr>
+                <tr><td><code class="code-inline-dim">data_admissao</code></td><td class="text-muted text-[12px]">string (YYYY-MM-DD)</td><td class="text-dim text-[12px]">—</td></tr>
+                <tr><td><code class="code-inline-dim">data_demissao</code></td><td class="text-muted text-[12px]">string (YYYY-MM-DD)</td><td class="text-dim text-[12px]">—</td></tr>
+                <tr><td><code class="code-inline-dim">tipo_demissao</code></td><td class="text-muted text-[12px]">string</td><td class="text-dim text-[12px]">—</td></tr>
+                <tr><td><code class="code-inline-dim">aviso_previo_trabalhado</code></td><td class="text-muted text-[12px]">bool</td><td class="text-dim text-[12px]">false</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- calcular_fgts -->
+          <div class="border border-stroke/50 rounded-lg overflow-hidden">
+            <div class="flex flex-wrap items-center gap-3 bg-surface px-5 py-4">
+              <code class="code-inline !text-gold">calcular_fgts</code>
+              <span class="text-muted text-[12px]">Saldo estimado do FGTS</span>
+            </div>
+            <table class="doc-table border-t border-stroke/30">
+              <thead><tr><th class="text-[10px] text-dim font-normal uppercase tracking-[0.1em]">Parâmetro</th><th class="text-[10px] text-dim font-normal uppercase tracking-[0.1em]">Tipo</th><th class="text-[10px] text-dim font-normal uppercase tracking-[0.1em]">Padrão</th></tr></thead>
+              <tbody>
+                <tr><td><code class="code-inline-dim">salario_bruto</code></td><td class="text-muted text-[12px]">float</td><td class="text-dim text-[12px]">—</td></tr>
+                <tr><td><code class="code-inline-dim">meses</code></td><td class="text-muted text-[12px]">int</td><td class="text-dim text-[12px]">—</td></tr>
+                <tr><td><code class="code-inline-dim">percentual_deposito</code></td><td class="text-muted text-[12px]">float</td><td class="text-dim text-[12px]">8.0</td></tr>
+                <tr><td><code class="code-inline-dim">incluir_multa_40</code></td><td class="text-muted text-[12px]">bool</td><td class="text-dim text-[12px]">false</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- calcular_prazo_processual -->
+          <div class="border border-stroke/50 rounded-lg overflow-hidden">
+            <div class="flex flex-wrap items-center gap-3 bg-surface px-5 py-4">
+              <code class="code-inline !text-gold">calcular_prazo_processual</code>
+              <span class="text-muted text-[12px]">Data-limite de prazo em dias úteis</span>
+            </div>
+            <table class="doc-table border-t border-stroke/30">
+              <thead><tr><th class="text-[10px] text-dim font-normal uppercase tracking-[0.1em]">Parâmetro</th><th class="text-[10px] text-dim font-normal uppercase tracking-[0.1em]">Tipo</th><th class="text-[10px] text-dim font-normal uppercase tracking-[0.1em]">Padrão</th></tr></thead>
+              <tbody>
+                <tr><td><code class="code-inline-dim">data_inicio</code></td><td class="text-muted text-[12px]">string (YYYY-MM-DD)</td><td class="text-dim text-[12px]">—</td></tr>
+                <tr><td><code class="code-inline-dim">prazo_dias_uteis</code></td><td class="text-muted text-[12px]">int</td><td class="text-dim text-[12px]">—</td></tr>
+                <tr><td><code class="code-inline-dim">contar_sabado</code></td><td class="text-muted text-[12px]">bool</td><td class="text-dim text-[12px]">false</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- calcular_indenizacao_acidente_trabalho -->
+          <div class="border border-stroke/50 rounded-lg overflow-hidden">
+            <div class="flex flex-wrap items-center gap-3 bg-surface px-5 py-4">
+              <code class="code-inline !text-gold">calcular_indenizacao_acidente_trabalho</code>
+              <span class="text-muted text-[12px]">Lucros cessantes e dano moral por acidente</span>
+            </div>
+            <table class="doc-table border-t border-stroke/30">
+              <thead><tr><th class="text-[10px] text-dim font-normal uppercase tracking-[0.1em]">Parâmetro</th><th class="text-[10px] text-dim font-normal uppercase tracking-[0.1em]">Tipo</th><th class="text-[10px] text-dim font-normal uppercase tracking-[0.1em]">Padrão</th></tr></thead>
+              <tbody>
+                <tr><td><code class="code-inline-dim">salario_mensal</code></td><td class="text-muted text-[12px]">float</td><td class="text-dim text-[12px]">—</td></tr>
+                <tr><td><code class="code-inline-dim">grau_invalidade_percentual</code></td><td class="text-muted text-[12px]">float</td><td class="text-dim text-[12px]">—</td></tr>
+                <tr><td><code class="code-inline-dim">expectativa_vida_anos</code></td><td class="text-muted text-[12px]">float</td><td class="text-dim text-[12px]">71.0</td></tr>
+                <tr><td><code class="code-inline-dim">idade_vitima</code></td><td class="text-muted text-[12px]">float</td><td class="text-dim text-[12px]">30.0</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- calcular_pensao_alimenticia -->
+          <div class="border border-stroke/50 rounded-lg overflow-hidden">
+            <div class="flex flex-wrap items-center gap-3 bg-surface px-5 py-4">
+              <code class="code-inline !text-gold">calcular_pensao_alimenticia</code>
+              <span class="text-muted text-[12px]">Estimativa de pensão alimentícia</span>
+            </div>
+            <table class="doc-table border-t border-stroke/30">
+              <thead><tr><th class="text-[10px] text-dim font-normal uppercase tracking-[0.1em]">Parâmetro</th><th class="text-[10px] text-dim font-normal uppercase tracking-[0.1em]">Tipo</th><th class="text-[10px] text-dim font-normal uppercase tracking-[0.1em]">Padrão</th></tr></thead>
+              <tbody>
+                <tr><td><code class="code-inline-dim">renda_liquida_alimentante</code></td><td class="text-muted text-[12px]">float</td><td class="text-dim text-[12px]">—</td></tr>
+                <tr><td><code class="code-inline-dim">numero_filhos</code></td><td class="text-muted text-[12px]">int</td><td class="text-dim text-[12px]">—</td></tr>
+                <tr><td><code class="code-inline-dim">percentual_por_filho</code></td><td class="text-muted text-[12px]">float</td><td class="text-dim text-[12px]">opcional</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- calcular_custas_processuais -->
+          <div class="border border-stroke/50 rounded-lg overflow-hidden">
+            <div class="flex flex-wrap items-center gap-3 bg-surface px-5 py-4">
+              <code class="code-inline !text-gold">calcular_custas_processuais</code>
+              <span class="text-muted text-[12px]">Estimativa de custas e taxa judiciária</span>
+            </div>
+            <table class="doc-table border-t border-stroke/30">
+              <thead><tr><th class="text-[10px] text-dim font-normal uppercase tracking-[0.1em]">Parâmetro</th><th class="text-[10px] text-dim font-normal uppercase tracking-[0.1em]">Tipo</th><th class="text-[10px] text-dim font-normal uppercase tracking-[0.1em]">Padrão</th></tr></thead>
+              <tbody>
+                <tr><td><code class="code-inline-dim">valor_causa</code></td><td class="text-muted text-[12px]">float</td><td class="text-dim text-[12px]">—</td></tr>
+                <tr><td><code class="code-inline-dim">estado</code></td><td class="text-muted text-[12px]">string</td><td class="text-dim text-[12px]">"SP"</td></tr>
+                <tr><td><code class="code-inline-dim">tipo_acao</code></td><td class="text-muted text-[12px]">string</td><td class="text-dim text-[12px]">"civel"</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ─── Status ───────────────────────────────────── -->
+      <section id="status" class="scroll-mt-20">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="gold-line"></div>
+          <h2 class="font-display text-2xl text-text">Status</h2>
+        </div>
+
+        <div class="border border-stroke/50 rounded-lg overflow-hidden">
+          <table class="doc-table">
+            <thead>
+              <tr>
+                <th class="text-[10px] text-muted uppercase tracking-[0.12em] font-normal w-24">Código</th>
+                <th class="text-[10px] text-muted uppercase tracking-[0.12em] font-normal w-40">Status</th>
+                <th class="text-[10px] text-muted uppercase tracking-[0.12em] font-normal">Descrição</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code class="code-inline">200</code></td>
+                <td class="text-muted text-[12px]">OK</td>
+                <td class="text-muted text-[12px]">Requisição processada com sucesso.</td>
+              </tr>
+              <tr>
+                <td><code class="code-inline">400</code></td>
+                <td class="text-muted text-[12px]">Bad Request</td>
+                <td class="text-muted text-[12px]">Parâmetros inválidos ou ausentes na requisição.</td>
+              </tr>
+              <tr>
+                <td><code class="code-inline">401</code></td>
+                <td class="text-muted text-[12px]">Unauthorized</td>
+                <td class="text-muted text-[12px]">Token ausente, inválido ou expirado.</td>
+              </tr>
+              <tr>
+                <td><code class="code-inline">403</code></td>
+                <td class="text-muted text-[12px]">Forbidden</td>
+                <td class="text-muted text-[12px]">Token válido, mas sem permissão para a tool solicitada.</td>
+              </tr>
+              <tr>
+                <td><code class="code-inline">404</code></td>
+                <td class="text-muted text-[12px]">Not Found</td>
+                <td class="text-muted text-[12px]">Endpoint ou tool não encontrada.</td>
+              </tr>
+              <tr>
+                <td><code class="code-inline">422</code></td>
+                <td class="text-muted text-[12px]">Unprocessable Entity</td>
+                <td class="text-muted text-[12px]">Argumentos da tool não passaram na validação.</td>
+              </tr>
+              <tr>
+                <td><code class="code-inline">429</code></td>
+                <td class="text-muted text-[12px]">Too Many Requests</td>
+                <td class="text-muted text-[12px]">Rate limit excedido. Aguarde antes de tentar novamente.</td>
+              </tr>
+              <tr>
+                <td><code class="code-inline">500</code></td>
+                <td class="text-muted text-[12px]">Internal Server Error</td>
+                <td class="text-muted text-[12px]">Erro inesperado no servidor.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+</div>
+

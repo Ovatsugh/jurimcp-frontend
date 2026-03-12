@@ -1,0 +1,120 @@
+<div class="min-h-screen bg-void bg-dot-grid flex items-stretch relative overflow-hidden">
+
+  <!-- Ambient glow -->
+  <div class="absolute inset-0 pointer-events-none"
+       style="background: radial-gradient(ellipse at 72% 50%, rgba(201,162,83,0.045) 0%, transparent 58%)"></div>
+
+  <!-- Left form panel -->
+  <div class="flex-1 flex flex-col items-center justify-center px-6 py-16 relative z-10">
+
+    <!-- Mobile logo -->
+    <div class="flex items-center gap-3 mb-12 lg:hidden anim-fade-in">
+      <div class="w-5 h-5 border border-gold/65 rotate-45"></div>
+      <span class="font-display text-2xl text-text tracking-[0.2em] uppercase">JuriMCP</span>
+    </div>
+
+    <div class="w-full max-w-[340px]">
+      <p class="text-gold tracking-[0.32em] text-[11px] uppercase mb-3 anim-fade-up">Novo acesso</p>
+      <h1 class="font-display text-[2.6rem] text-text mb-2 anim-fade-up delay-100">Criar conta</h1>
+      <p class="text-muted text-[13px] mb-10 anim-fade-up delay-100">
+        Já tem conta?
+        <a routerLink="/login" class="text-gold hover:underline underline-offset-2 ml-1">Entrar</a>
+      </p>
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-5">
+
+        <div class="anim-fade-up delay-200">
+          <label for="name" class="block text-[11px] text-muted uppercase tracking-[0.12em] mb-2">Nome completo</label>
+          <input
+            id="name"
+            type="text"
+            formControlName="name"
+            placeholder="João Silva"
+            class="field"
+            [class.is-error]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched">
+          <span *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched" class="error-msg">
+            Nome é obrigatório
+          </span>
+        </div>
+
+        <div class="anim-fade-up delay-300">
+          <label for="email" class="block text-[11px] text-muted uppercase tracking-[0.12em] mb-2">Email</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+            placeholder="seu@email.com"
+            class="field"
+            [class.is-error]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+          <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+            <span *ngIf="registerForm.get('email')?.errors?.['required']" class="error-msg">Email é obrigatório</span>
+            <span *ngIf="registerForm.get('email')?.errors?.['email']" class="error-msg">Email inválido</span>
+          </div>
+        </div>
+
+        <div class="anim-fade-up delay-400">
+          <label for="password" class="block text-[11px] text-muted uppercase tracking-[0.12em] mb-2">Senha</label>
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            placeholder="Mínimo 8 caracteres"
+            class="field"
+            [class.is-error]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+          <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+            <span *ngIf="registerForm.get('password')?.errors?.['required']" class="error-msg">Senha é obrigatória</span>
+            <span *ngIf="registerForm.get('password')?.errors?.['minlength']" class="error-msg">Mínimo 8 caracteres</span>
+          </div>
+        </div>
+
+        <div class="anim-fade-up delay-500">
+          <label for="password_confirmation" class="block text-[11px] text-muted uppercase tracking-[0.12em] mb-2">Confirmar senha</label>
+          <input
+            id="password_confirmation"
+            type="password"
+            formControlName="password_confirmation"
+            placeholder="Repita a senha"
+            class="field"
+            [class.is-error]="(registerForm.get('password_confirmation')?.invalid && registerForm.get('password_confirmation')?.touched) || (registerForm.errors?.['passwordMismatch'] && registerForm.get('password_confirmation')?.touched)">
+          <div *ngIf="registerForm.get('password_confirmation')?.touched">
+            <span *ngIf="registerForm.get('password_confirmation')?.errors?.['required']" class="error-msg">Campo obrigatório</span>
+            <span *ngIf="registerForm.errors?.['passwordMismatch']" class="error-msg">Senhas não coincidem</span>
+          </div>
+        </div>
+
+        <div *ngIf="error" class="text-fail text-[13px] py-2.5 px-4 bg-fail/5 border border-fail/20 rounded-md">
+          {{ error }}
+        </div>
+
+        <div class="pt-2 anim-fade-up delay-600">
+          <button type="submit" [disabled]="registerForm.invalid || loading" class="btn-primary">
+            {{ loading ? 'Criando conta...' : 'Criar conta' }}
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- Right branding panel -->
+  <aside class="hidden lg:flex flex-col justify-between w-[44%] flex-shrink-0 border-l border-stroke/40 px-14 py-12 relative z-10">
+    <div class="flex items-center gap-3 anim-fade-in">
+      <div class="w-5 h-5 border border-gold/65 rotate-45"></div>
+      <span class="font-display text-2xl text-text tracking-[0.2em] uppercase">JuriMCP</span>
+    </div>
+
+    <div class="anim-fade-up delay-200">
+      <div class="gold-line mb-8"></div>
+      <h2 class="font-display text-[3.2rem] text-text leading-[1.05] mb-5">
+        Comece a<br>construir.
+      </h2>
+      <p class="text-muted text-[13px] leading-relaxed max-w-[300px]">
+        Registre-se e obtenha acesso ao painel de desenvolvimento para começar a integrar a JuriMCP.
+      </p>
+    </div>
+
+    <p class="text-dim text-xs anim-fade-in delay-300">© 2026 JuriMCP</p>
+  </aside>
+
+</div>
