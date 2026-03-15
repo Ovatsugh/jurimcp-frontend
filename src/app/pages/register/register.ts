@@ -3,8 +3,6 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, ValidationErro
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../shared/services/auth.service';
 import { NgIf } from '@angular/common';
-import { environment } from '../../../environments/environment';
-
 function passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
   const password = control.get('password');
   const confirmPassword = control.get('password_confirmation');
@@ -47,7 +45,7 @@ export class Register {
 
       this.authService.register(this.registerForm.value).subscribe({
         next: () => {
-          window.location.href = environment.redirectUrl;
+          this.router.navigate(['/dashboard']);
         },
         error: (err) => {
           this.error = err.error?.message || 'Erro ao criar conta. Tente novamente.';
