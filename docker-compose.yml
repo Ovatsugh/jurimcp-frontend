@@ -4,4 +4,4 @@ services:
     container_name: juridia-frontend
     restart: unless-stopped
     ports:
-      - "8005:80"
+      - "4200:80"
