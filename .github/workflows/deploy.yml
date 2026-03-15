@@ -100,9 +100,6 @@ jobs:
             set -e
             REPO_LOWER="$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')"
 
-            # ── 1. Login no GHCR ──
-            echo "${{ secrets.PERSONAL_ACCESS_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
             # ── 2. Garante estrutura de diretórios ──
             mkdir -p /opt/juridia-frontend
             cd /opt/juridia-frontend
