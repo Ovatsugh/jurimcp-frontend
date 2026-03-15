@@ -24,7 +24,7 @@ export class Docs {
     this.router.navigate(['/']);
   }
 
-  readonly authConnectionCurl = `curl -s -X POST "http://localhost:8000/mcp/jurimcp" \\
+  readonly authConnectionCurl = `curl -s -X POST "https://api.jurimcp.com/mcp/jurimcp" \\
   -H "X-Api-Key: sk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \\
   -H "Content-Type: application/json" \\
   -d '{"jsonrpc": "2.0", "id": 1, "method": "tools/call",
@@ -39,7 +39,7 @@ export class Docs {
   }'`;
 
   readonly authUsageCurl = `# Chamar uma tool via HTTP POST
-curl -s -X POST "http://localhost:8000/mcp/jurimcp" \\
+curl -s -X POST "https://api.jurimcp.com/mcp/jurimcp" \\
   -H "X-Api-Key: sk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -57,7 +57,7 @@ curl -s -X POST "http://localhost:8000/mcp/jurimcp" \\
   }'`;
 
   readonly exampleCurl = `API_KEY="sk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-MCP_URL="http://localhost:8000/mcp/jurimcp"
+MCP_URL="https://api.jurimcp.com/mcp/jurimcp"
 
 # Listar tools disponíveis
 curl -s -X POST "$MCP_URL" \\
@@ -84,7 +84,7 @@ curl -s -X POST "$MCP_URL" \\
   }'`;
 
   readonly exampleNodejs = `const API_KEY = 'sk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
-const MCP_URL = 'http://localhost:8000/mcp/jurimcp';
+const MCP_URL = 'https://api.jurimcp.com/mcp/jurimcp';
 
 async function mcpCall(id, method, params = {}) {
   const res = await fetch(MCP_URL, {
@@ -122,7 +122,7 @@ import (
 
 const (
     apiKey = "sk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-    mcpURL = "http://localhost:8000/mcp/jurimcp"
+    mcpURL = "https://api.jurimcp.com/mcp/jurimcp"
 )
 
 func mcpCall(id int, method string, params any) (map[string]any, error) {
@@ -157,7 +157,7 @@ func main() {
   readonly examplePhp = `<?php
 
 const API_KEY = 'sk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
-const MCP_URL = 'http://localhost:8000/mcp/jurimcp';
+const MCP_URL = 'https://api.jurimcp.com/mcp/jurimcp';
 
 function mcpCall(int $id, string $method, array $params = []): array {
     $ch = curl_init(MCP_URL);
@@ -186,7 +186,7 @@ from langchain_mcp_adapters.client import MultiServerMCPClient
 
 client = MultiServerMCPClient({
     "jurimcp": {
-        "url": "http://localhost:8000/mcp/jurimcp",
+        "url": "https://api.jurimcp.com/mcp/jurimcp",
         "transport": "streamable_http",
         "headers": {
             "X-Api-Key": "sk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
